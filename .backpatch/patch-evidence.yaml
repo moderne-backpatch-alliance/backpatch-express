@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 4.18.4-backpatch-00001
+release: 4.18.4-backpatch-00002
 baseline: v4.18.3+backpatch.baseline
 fixes:
   - cve: CVE-2024-29041
@@ -10,12 +10,20 @@ fixes:
     basis: backport
     artifacts:
       - express
-    note: "New in this release; upstream's fix in 4.19.0 (0867302, a003cfa, da4d763). It closes the advisory: Express.js Open Redirect in malformed URLs."
+    note: "Carried from 4.18.4-backpatch-00001; upstream's fix in 4.19.0 (0867302, a003cfa, da4d763). It closes the advisory: Express.js Open Redirect in malformed URLs."
+  - cve: CVE-2024-43796
+    upstream_fix_url: https://github.com/expressjs/express/commit/54271f69b511fea198471e6ff3400ab805d6b553
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2024-43796
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-express/commit/91f3962
+    basis: backport
+    artifacts:
+      - express
+    note: "New in this release; upstream's fix in 4.20.0. It closes the advisory: express vulnerable to XSS via response.redirect()."
 tests:
-  commit: 7adc43a3aa382a5e27d94bb77749d9a029165fc4
+  commit: 91f3962b60f5d4406be7f250ed75aee9a97f3e2a
   command: npm pack --ignore-scripts, npm install of the tarball (--ignore-scripts) in a fresh consumer, then mocha --require test/support/env --check-leaks test/ test/acceptance/ with the tested commit's test examples beside the installed package and the line's dev dependencies, each test recorded into the JUnit report
   runtime: Node.js v22.16.0, npm 11.4.2, macOS 27.2 arm64
-  report: express-4.18.4-backpatch-00001-tests.zip
-  report_sha256: 81862693ad9283b4732bbf22740c897f9a93be7617a2e4441a2bff04904e81ba
+  report: express-4.18.4-backpatch-00002-tests.zip
+  report_sha256: 2e8bff2ca61c8e767231a35ab88fe1d36eeebb7f6252743852a7fb0d095a3546
   result: pass
-  note: "upstream's mocha suite (test/ test/acceptance/) on the packed package installed in a fresh consumer at the tested commit: 1285 tests, 1285 passed, 0 failed, 0 skipped. The CVE tests (test/res.location.js), with this release's production lines reverted at the tested commit: 27 tests, 20 passed, 7 failed, 0 skipped; with them: 27 tests, 27 passed, 0 failed, 0 skipped. Built with no build step, npm pack --ignore-scripts in a directory named express, 14 of npmjs's 16 files for 4.18.3 are identical; the rest are lib/response.js, package.json. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
+  note: "upstream's mocha suite (test/ test/acceptance/) on the packed package installed in a fresh consumer at the tested commit: 1286 tests, 1285 passed, 1 failed, 0 skipped. The CVE tests (test/res.redirect.js), with this release's production lines reverted at the tested commit: 14 tests, 10 passed, 4 failed, 0 skipped; with them: 14 tests, 14 passed, 0 failed, 0 skipped. Built with no build step, npm pack --ignore-scripts in a directory named express, 14 of npmjs's 16 files for 4.18.3 are identical; the rest are lib/response.js, package.json. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build. Known flaky suite: 1 tests red in this run, each named with its failing runs in interleaved runs on ours and on npmjs's 4.18.3 (the full suite 200 times, or the test's file alone where noted in flake-evidence.md) (same machine, measured at 00001; any-failure rate ours 149/200, npmjs 152/200, z -0.35): test/express.text.js #express.text() should 400 when invalid content-length (failing runs ours 0/200, npmjs 1/200)."
